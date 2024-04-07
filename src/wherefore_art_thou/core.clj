@@ -79,23 +79,7 @@
    
    Specified as dynamic so that you can rebind this to suit your needs."
   3)
-
-(def ^:dynamic *male-suffixes*
-  "Suffixes which may be appended to male names. Note that suffixes will 
-   only be appended if the base name ends in a consonant. If your culture does
-not use gender-specific name suffixes, bind this to `nil`.
-   
-   Specified as dynamic so that you can rebind this to suit your needs."
-  '("" "an" "on" "en"))
-
-(def ^:dynamic *female-suffixes*
-  "Suffixes which may be appended to female names. Note that suffixes will 
-         only be appended if the base name ends in a consonant. If your culture does
-not use gender-specific name suffixes, bind this to `nil`.
-         
-         Specified as dynamic so that you can rebind this to suit your needs."
-  '("" "a" "i" "iy" "y"))
-
+ 
 (defn- max-consecutive
   [name type]
   (last
@@ -103,11 +87,11 @@ not use gender-specific name suffixes, bind this to `nil`.
     (loop [i 0 cands '() r (seq name)]
       ;; (println (str "i: " i ", c: " c ", r: " r))
       (let [c (str (first r))]
-       (cond (empty? r) (cons i cands)
-            (case type
-              :consonant (consonant? c)
-              :vowel (vowel? c)) (recur (inc i) cands (rest r))
-            :else (recur 0 (cons i cands) (rest r))))))))
+        (cond (empty? r) (cons i cands)
+              (case type
+                :consonant (consonant? c)
+                :vowel (vowel? c)) (recur (inc i) cands (rest r))
+              :else (recur 0 (cons i cands) (rest r))))))))
 
 (defn- gen
   "Generate a candidate name; may return nil."
@@ -138,17 +122,28 @@ not use gender-specific name suffixes, bind this to `nil`.
       (cond (and m (zero? (.getEditDistance m))) false
             :else true))))
 
+(def ^:dynamic *genders*
+  "Genders of characters in your game world, with name suffixes appropriate to 
+   those genders.
+         
+   Specified as dynamic so that you can rebind this to suit your needs. If the
+   cultures of your world do not use gender-specific suffixes, the `:suffixes`
+   values should be `nil`. Repeated suffixes will be used more frequently."
+  {:female {:suffixes ["" "a" "a" "a" "i" "iy" "iy" "y"]}
+   :male {:suffixes ["" "an" "an" "en" "en" "en" "on"]}})
+
 (defn gender-suffix
   "Return a suitable gender suffix for this `base-name` given this `gender`.
-   Default is no suffix."
+   `gender` may be a keyword, or a map which has a keyword value to the
+   keyword `:gender`. Keywords which are not keys in the current binding of
+   `*genders*` will be ignored. Default is no suffix."
   [base-name gender]
   (let [last-consonant? (consonant? (last (seq base-name)))
         g' (if (keyword? gender) gender (:gender gender))]
     (or
      (when last-consonant?
-       (case g'
-         :male (rand-nth *male-suffixes*)
-         :female (rand-nth *female-suffixes*)))
+       (when g'
+         (rand-nth (-> *genders* g' :suffixes))))
      "")))
 
 (defn generate
