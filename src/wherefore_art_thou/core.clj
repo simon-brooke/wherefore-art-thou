@@ -142,7 +142,7 @@
         g' (if (keyword? gender) gender (:gender gender))]
     (or
      (when last-consonant?
-       (when g'
+       (when (keyword? g')
          (rand-nth (-> *genders* g' :suffixes))))
      "")))
 
