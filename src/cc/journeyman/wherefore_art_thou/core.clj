@@ -1,4 +1,4 @@
-(ns wherefore-art-thou.core
+(ns cc.journeyman.wherefore-art-thou.core
   "Generate candidate personal names.
    
    Names are returned in all lower case, with the intention that they should 
@@ -6,6 +6,33 @@
    my game world creates names be compounding clan, family and personal names,
    and embedded capitals would be awkward."
   (:require [symspell-clj.core :as sp]))
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;
+;;;; Wherfore art thou core: Generate candidate personal names.
+;;;;
+;;;; This program is free software; you can redistribute it and/or
+;;;; modify it under the terms of the GNU General Public License
+;;;; as published by the Free Software Foundation; either version 2
+;;;; of the License, or (at your option) any later version.
+;;;;
+;;;; This program is distributed in the hope that it will be useful,
+;;;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;;;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;;;; GNU General Public License for more details.
+;;;;
+;;;; You should have received a copy of the GNU General Public License
+;;;; along with this program; if not, write to the Free Software
+;;;; Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
+;;;; USA.
+;;;;
+;;;; SPDX-FileCopyrightText: 2024 Simon Brooke <simon@journeyman.cc>
+;;;; SPDX-License-Identifier: GPL-2.0-or-later
+;;;;
+;;;; Copyright (C) 2024 Simon Brooke
+;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 
 (def ^:dynamic *fragments*
   "Characters and sequences of characters which can be appended to a candidate
@@ -43,7 +70,7 @@
    be strings.
    
    Specified as dynamic so that you can rebind this to suit your needs."
-  (set (remove vowel? *fragments*)))
+  (set (filter #(= (count %) 1)(remove vowel? *fragments*))))
 
 (def ^:dynamic *disallowed-sequences*
   "This is very much a matter of taste; currently a list of character 
